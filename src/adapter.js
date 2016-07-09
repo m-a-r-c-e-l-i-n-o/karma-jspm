@@ -51,18 +51,23 @@
             System.bundles = [];
         }
 
-        var systemInstantiate = System.instantiate;
-        var http = location.protocol;
-        var slashes = http.concat('//');
-        var host = slashes.concat(window.location.host) + '/base/';
-        System.instantiate = function(load) {
-            var fileKey = load.name.replace(host, '');
-            if (karma.config.jspm.coverageFiles[fileKey]) {
-                var re = new RegExp('file://' + karma.config.jspm.basePath + '/','g');
-                load.source = karma.config.jspm.coverageFiles[fileKey].replace(re, host);
+        if (typeof karma.config.jspm.coverage === 'object') {
+            var systemInstantiate = System.instantiate;
+            var http = location.protocol;
+            var slashes = http.concat('//');
+            var host = slashes.concat(window.location.host);
+            if (host.split('').reverse()[0] !== '/') {
+                host = host.concat('/');
             }
-            return systemInstantiate.call(System, load);
-        };
+            System.instantiate = function(load) {
+                var fileKey = load.name.replace(host, '');
+                if (karma.config.jspm.coverage.files[fileKey]) {
+                    var re = new RegExp('file://' + karma.config.jspm.coverage.basePath + '/','g');
+                    load.source = karma.config.jspm.coverage.files[fileKey].replace(re, host);
+                }
+                return systemInstantiate.call(System, load);
+            };
+        }
 
         // Load everything specified in loadFiles in the specified order
         var promiseChain = Promise.resolve();

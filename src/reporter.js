@@ -15,7 +15,7 @@ function CoverageReporter(rootConfig, helper, logger, emitter) {
     };
     config._onExit = function (done) {
         try {
-            rimraf.sync(rootConfig.client.jspm.tempDirectory);
+            rimraf.sync(rootConfig.client.jspm.coverage.tempDirectory);
         } catch(e) {
             log.error(e);
         }
